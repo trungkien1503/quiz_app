@@ -15,16 +15,23 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     questions = load_questions()
+    results = []
     correct_answers = 0
+
     for i, question in enumerate(questions):
         selected_option = request.form.get(f'question-{i}')
-        print(f"Question {i}: {question['question']}")
-        print(f"Selected Option: {selected_option}")
-        print(f"Correct Answer: {question['answer']}")
-        if selected_option == question['answer']:
+        correct_option = question['answer']
+        is_correct = selected_option == correct_option
+        if is_correct:
             correct_answers += 1
-    print(f"Total Correct Answers: {correct_answers}")
-    return render_template('result.html', correct_answers=correct_answers, total_questions=len(questions))
+        results.append({
+            'question': question['question'],
+            'selected_option': selected_option,
+            'correct_option': correct_option,
+            'is_correct': is_correct
+        })
+
+    return render_template('result.html', correct_answers=correct_answers, total_questions=len(questions), results=results)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
